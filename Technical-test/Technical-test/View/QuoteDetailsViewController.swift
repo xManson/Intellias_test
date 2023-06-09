@@ -10,6 +10,7 @@ import UIKit
 class QuoteDetailsViewController: UIViewController {
     
     private var quote:Quote? = nil
+    private let service: QuoteListService
     
     let symbolLabel = UILabel()
     let nameLabel = UILabel()
@@ -19,9 +20,8 @@ class QuoteDetailsViewController: UIViewController {
     let favoriteButton = UIButton()
     
     
-    
-    
-    init(quote:Quote) {
+    init(quote: Quote, service: QuoteListService) {
+        self.service = service
         super.init(nibName: nil, bundle: nil)
         self.quote = quote
     }
@@ -65,7 +65,9 @@ class QuoteDetailsViewController: UIViewController {
         readableLastChangePercentLabel.layer.borderColor = UIColor.black.cgColor
         readableLastChangePercentLabel.font = .systemFont(ofSize: 30)
         
-        favoriteButton.setTitle("Add to favorites", for: .normal)
+        let isFav = quote?.isFavourite ?? false
+        let title = isFav ? "Remove from favourites" : "Add to favourites"
+        favoriteButton.setTitle(title, for: .normal)
         favoriteButton.layer.cornerRadius = 6
         favoriteButton.layer.masksToBounds = true
         favoriteButton.layer.borderWidth = 3
@@ -121,7 +123,7 @@ class QuoteDetailsViewController: UIViewController {
                         
             favoriteButton.topAnchor.constraint(equalTo: readableLastChangePercentLabel.bottomAnchor, constant: 30),
             favoriteButton.centerXAnchor.constraint(equalTo: safeArea.centerXAnchor),
-            favoriteButton.widthAnchor.constraint(equalToConstant: 150),
+            favoriteButton.widthAnchor.constraint(equalToConstant: 220),
             favoriteButton.heightAnchor.constraint(equalToConstant: 44),
             
         ])
@@ -129,6 +131,10 @@ class QuoteDetailsViewController: UIViewController {
     
     
     @objc func didPressFavoriteButton(_ sender:UIButton!) {
-        // TODO
+        if let quote = quote {
+            service.applyFavourites(symbol: quote.symbol)
+            navigationController?.popViewController(animated: true)
+        }
+        
     }
 }
