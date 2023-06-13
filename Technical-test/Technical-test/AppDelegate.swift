@@ -14,14 +14,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
+        configureAppearance()
         window = UIWindow(frame: UIScreen.main.bounds)
-        let vc:QuotesListViewController = QuotesListViewController()
+        
+        let network = NetworkLoader()
+        let favourites = FavouriteStore()
+        let market = Market()
+        let service = QuoteListService(networkLoader: network, favouritesStore: favourites, market: market)
+
+        let vc:QuotesListViewController = QuotesListViewController(service: service)
         let nc:UINavigationController = UINavigationController(rootViewController: vc)
         
         self.window?.rootViewController = nc
         self.window?.makeKeyAndVisible()
         
         return true
+    }
+    
+    private func configureAppearance() {
+        let coloredAppearance = UINavigationBarAppearance()
+        coloredAppearance.configureWithOpaqueBackground()
+        coloredAppearance.backgroundColor = .black
+        coloredAppearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+        coloredAppearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+        UINavigationBar.appearance().standardAppearance = coloredAppearance
+        UINavigationBar.appearance().scrollEdgeAppearance = coloredAppearance
     }
 
 }
